@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Welcome to the Game Dashboard</h2>
+        <div class="games-container">
+            {% for game in games %}
+            <div class="game-card" data-game-id="{{ loop.index }}">
+                <img src="{{ game.icon }}" alt="{{ game.name }} Icon">
+                <h2>{{ game.name }}</h2>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="game-content" class="game-content">
+            <h3>Select a game to view its details!</h3>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const gameCards = document.querySelectorAll(".game-card");
+            const gameContent = document.getElementById("game-content");
+
+            gameCards.forEach((card) => {
+                card.addEventListener("click", function () {
+                    const gameId = card.getAttribute("data-game-id");
+                    fetch(`/game${gameId}`)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Game content not found.");
+                        }
+                        return response.text();
+                    })
+                    .then((htmlContent) => {
+                        gameContent.innerHTML = htmlContent;
+                    })
+                    .catch((error) => {
+                        gameContent.innerHTML = `<p>Error: ${error.message}</p>`;
+                    });
+
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #2e2e2e;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.logo-container img {
+    width: 50px;
+    height: auto;
+}
+
+.background {
+    /* Set the GIF as background */
+    background: url('/static/game_background.gif') no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.5);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #ffcc00;
+}
+
+input {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #ffcc00;
+    padding: 10px;
+    margin: 10px 0;
+    width: 100%;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #ffcc00;
+    color: #333;
+    border: none;
+    padding: 15px;
+    width: 100%;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #e6b800;
+}
+
+a {
+    color: #ffcc00;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul li {
+    color: #ff0000;
+    font-weight: bold;
+}
