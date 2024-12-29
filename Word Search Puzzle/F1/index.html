@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Word Search Puzzle</h1>
+    <form id="uploadForm">
+        <input type="file" id="pdfInput" accept=".pdf" />
+        <button type="button" id="uploadButton">Upload PDF</button>
+    </form>
+    <div id="statusMessage"></div>
+    <div id="puzzleContainer"></div>
+    <button id="verifyWordButton" style="display: none;">Verify Selected Word</button>
+    <div id="scoreSection" style="display: none;">
+        <h2>Your Results</h2>
+        <p id="scoreDisplay"></p>
+        <button id="restartGame">Restart Game</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
