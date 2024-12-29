@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload PDF</title>
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: url('{{ url_for("static", filename="nodes.gif") }}') no-repeat center center fixed;
+        background-size: cover;
+        color: #fff;
+        text-align: center;
+    }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-top: 50px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        form {
+            margin-top: 30px;
+            display: inline-block;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.6);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        label {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        input[type="file"] {
+            font-size: 1rem;
+            padding: 5px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 2px solid #ccc;
+            background-color: #fff;
+        }
+
+        button {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #6200ea;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px #6200ea, 0 0 20px #6200ea, 0 0 30px #6200ea;
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            box-shadow: 0 0 20px #bb86fc, 0 0 40px #bb86fc, 0 0 60px #bb86fc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload a PDF</h1>
+    <form action="/" method="post" enctype="multipart/form-data">
+        <label for="pdf_file">Choose PDF:</label>
+        <input type="file" name="pdf_file" id="pdf_file" accept=".pdf" required>
+        <br>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>
