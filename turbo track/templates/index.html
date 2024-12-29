@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TURBO TRACK </title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0c0d;
+            background: url('gif.gif') no-repeat center center fixed, #000;
+            color: #f0f0f0;
+        }
+
+        #game-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3em;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        #game-page {
+            position: relative;
+            width: 60%;
+            height: 80%;
+            background: url('static/images/road.gif') center / cover;
+            border: 5px solid #444;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        #car {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            width: 120px;
+            height: 180px;
+            background: url('static/images/carrr.png') center / cover no-repeat;
+            transform: translateX(-50%);
+        }
+
+        #obstacle {
+            position: absolute;
+            top: -130px;
+            left: 50%;
+            width: 120px;
+            height: 120px;
+            background: #e74c3c;
+            border-radius: 5px;
+            border: 2px solid #c0392b;
+            box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+            transform: translateX(-50%);
+        }
+
+        #question-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            border: 2px solid #ffcc00;
+            padding: 25px;
+            width: 70%;
+            max-width: 500px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+            display: none;
+        }
+
+        #question-text {
+            font-size: 1.5em;
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+
+        #options {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        .option-btn {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin: 10px 0;
+            width: 80%;
+        }
+
+        .option-btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.1);
+        }
+
+        #score {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #28a745;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-weight: bold;
+        }
+
+        #initial-page {
+            text-align: center;
+        }
+
+        #pdf-upload {
+            margin: 15px 0;
+            font-size: 1em;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #333;
+            color: #fff;
+        }
+
+        #start-btn {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        #start-btn:hover {
+            transform: scale(1.1);
+            background-color: #218838;
+        }
+
+        #start-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>TURBO TRACK </h1>
+
+        <div id="initial-page">
+            <input type="file" id="pdf-upload" accept=".pdf">
+            <button id="start-btn" disabled>Let's Play</button>
+        </div>
+
+        <div id="game-page">
+            <div id="car"></div>
+            <div id="obstacle"></div>
+            <div id="question-container">
+                <p id="question-text"></p>
+                <div id="options">
+                    <button class="option-btn">Option 1</button>
+                    <button class="option-btn">Option 2</button>
+                    <button class="option-btn">Option 3</button>
+                    <button class="option-btn">Option 4</button>
+                </div>
+            </div>
+            <p id="score">Score: 0</p> <!-- Display the score here in the top-right corner -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let carPosition = 0;
+        let obstaclePosition = -130;
+        let score = 0;
+        let currentQuestion = 0;
+        let questions = [];
+        let gameInterval;
+        let obstacleInterval;
+        let isQuestionActive = false;
+        const carSpeed = 5;
+        const obstacleSpeed = 5;
+        const leftLimit = 50;
+        const rightLimit = $('#game-page').width() - $('#car').width() - 50;
+
+        $('#pdf-upload').change(function() {
+            $('#start-btn').prop('disabled', false);
+        });
+
+        $('#start-btn').click(function() {
+            const formData = new FormData();
+            formData.append('pdf', $('#pdf-upload')[0].files[0]);
+
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(data) {
+                    questions = data;
+                    $('#initial-page').hide();
+                    $('#game-page').show();
+                    startGame();
+                }
+            });
+        });
+
+        $(document).keydown(function(e) {
+            if (e.key === 'ArrowRight') {
+                carPosition += carSpeed;
+                if (carPosition > rightLimit) carPosition = rightLimit;
+                $('#car').css('left', carPosition + 'px');
+            } else if (e.key === 'ArrowLeft') {
+                carPosition -= carSpeed;
+                if (carPosition < leftLimit) carPosition = leftLimit;
+                $('#car').css('left', carPosition + 'px');
+            }
+        });
+
+        function startGame() {
+            gameInterval = setInterval(function() {
+                const carLeft = $('#car').offset().left;
+                const carRight = carLeft + $('#car').width();
+                const carBottom = $('#car').offset().top + $('#car').height();
+                const carTop = $('#car').offset().top;
+
+                const obstacleLeft = $('#obstacle').offset().left;
+                const obstacleRight = obstacleLeft + $('#obstacle').width();
+                const obstacleBottom = $('#obstacle').offset().top + $('#obstacle').height();
+                const obstacleTop = $('#obstacle').offset().top;
+
+                if (
+                    carBottom >= obstacleTop &&
+                    carTop <= obstacleBottom &&
+                    carRight >= obstacleLeft &&
+                    carLeft <= obstacleRight
+                ) {
+                    if (!isQuestionActive) {
+                        clearInterval(gameInterval);
+                        clearInterval(obstacleInterval);
+                        setTimeout(showQuestion, 500);
+                    }
+                    return;
+                }
+            }, 100);
+
+            obstacleInterval = setInterval(function() {
+                obstaclePosition += obstacleSpeed;
+                if (obstaclePosition > $('#game-page').height()) {
+                    obstaclePosition = -130;
+                    const randomPosition = Math.random() * ($('#game-page').width() - $('#obstacle').width());
+                    $('#obstacle').css('left', randomPosition + 'px');
+                }
+                $('#obstacle').css('top', obstaclePosition + 'px');
+            }, 100);
+        }
+
+        function showQuestion() {
+            isQuestionActive = true;
+            const question = questions[currentQuestion];
+            $('#question-container').show();
+            $('#question-text').text(question.question);
+            $('.option-btn').each(function(index) {
+                $(this).text(question.options[index]);
+                $(this).click(function() {
+                    checkAnswer($(this).text(), question.correctAnswer);
+                });
+            });
+        }
+
+        function checkAnswer(selectedAnswer, correctAnswer) {
+            if (selectedAnswer === correctAnswer) {
+                score += 5; // Correct answer increases score by 5
+            } else {
+                score = 0; // Incorrect answer resets score to 0
+            }
+            $('#score').text('Score: ' + score); // Display the updated score at the corner
+            setTimeout(resumeGame, 3000);
+            $('#question-container').hide();
+            currentQuestion++;
+            isQuestionActive = false;
+        }
+
+        function resumeGame() {
+            $('#question-container').hide();
+            obstaclePosition = -130; // Reset the obstacle position
+            const randomPosition = Math.random() * ($('#game-page').width() - $('#obstacle').width());
+            $('#obstacle').css('left', randomPosition + 'px');
+            startGame(); // Resume the game after 3 seconds
+        }
+    </script>
+</body>
+</html>
